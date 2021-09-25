@@ -1,6 +1,9 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math"
+)
 
 var roman = map[string]int{
 	"I": 1,
@@ -56,6 +59,7 @@ func check_valid(s string) bool {
 	}
 	return true
 }
+
 func lexar(code string) []string {
 	var a []string
 	prev := ""
@@ -116,13 +120,14 @@ func romanToInt(s string) int {
 //if val, ok := dict["foo"]; ok
 var idx int = 0
 var universal_lexed []string
+var current_token string
 
 func lex() string {
-
 	if universal_lexed[idx] == "end_token" {
 		return "parsing done"
 	} else {
 		next_token := universal_lexed[idx]
+		current_token = next_token
 		idx = idx + 1
 		return next_token
 	}
@@ -158,6 +163,7 @@ func Roman(number int) string {
 	return roman
 }
 
+//expr -> term [ ('+' | '-') term ]*
 func parse_expr() int {
 	//next_token = lex()
 	term := parse_term()
@@ -173,6 +179,7 @@ func parse_expr() int {
 	}
 }
 
+//term -> factor [ ('*' | '/') factor ]*
 func parse_term() int {
 	factor := parse_factor()
 	for {
@@ -186,10 +193,43 @@ func parse_term() int {
 		}
 	}
 }
-func parse_factor() int {
 
+//factor -> base [ '^' exponent ]*
+func parse_factor() int {
+	factor := parse_base()
+	for {
+		next_token := lex()
+		if next_token == "power_token" {
+			factor = int(math.Pow(float64(factor), float64(parse_exponent())))
+		} else {
+			return factor
+		}
+	}
 }
 
+//base -> number| '(' expr ')'
+func parse_base() int {
+	next_token := lex()
+	var value int
+	if next_token == "left_bracket" {
+		value = parse_expr()
+		next_token = lex()
+		if next_token != "right_bracket" {
+			fmt.Println("error in parsing base")
+		}
+	} else {
+		value = parse_number()
+	}
+	return value
+}
+
+//exponent -> number| '(' expr ')'
+func parse_exponent() int {
+	return 1
+}
+func parse_number() int {
+	return 1
+}
 func main() {
 	/*
 		for i := 5; i < 50; i++ {
@@ -214,7 +254,7 @@ Grammar
 expr -> term [ ('+' | '-') term ]*
 term -> factor [ ('*' | '/') factor ]*
 factor -> base [ '^' exponent ]*
-base -> number| '(' expr ')' |
+base -> number| '(' expr ')'
 exponent -> number| '(' expr ')'
 
 def parse_expr():
