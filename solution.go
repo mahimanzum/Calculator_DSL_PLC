@@ -85,6 +85,7 @@ func lexar(code string) []string {
 				}
 			}
 		} else if val == '$' && len(prev) == 0 {
+			a = append(a, "end_token")
 			return a
 		} else {
 			prev = prev + string(val)
@@ -113,7 +114,20 @@ func romanToInt(s string) int {
 }
 
 //if val, ok := dict["foo"]; ok
+var idx int = 0
+var universal_lexed []string
 
+func lex() string {
+
+	if universal_lexed[idx] == "end_token" {
+		return "parsing done"
+	} else {
+		next_token := universal_lexed[idx]
+		idx = idx + 1
+		return next_token
+	}
+
+}
 func Roman(number int) string {
 	conversions := []struct {
 		value int
@@ -144,6 +158,38 @@ func Roman(number int) string {
 	return roman
 }
 
+func parse_expr() int {
+	//next_token = lex()
+	term := parse_term()
+	for {
+		next_token := lex()
+		if next_token == "plus_token" {
+			term = term + parse_term()
+		} else if next_token == "minus_token" {
+			term = term - parse_term()
+		} else {
+			return term
+		}
+	}
+}
+
+func parse_term() int {
+	factor := parse_factor()
+	for {
+		next_token := lex()
+		if next_token == "times_token" {
+			factor = factor * parse_factor()
+		} else if next_token == "divide_token" {
+			factor = factor / parse_factor()
+		} else {
+			return factor
+		}
+	}
+}
+func parse_factor() int {
+
+}
+
 func main() {
 	/*
 		for i := 5; i < 50; i++ {
@@ -154,7 +200,7 @@ func main() {
 	*/
 	fmt.Println(check_valid("XI"))
 	//fmt.Println(lexar("XI plus (X plus X)$"))
-	fmt.Println(lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II"))
+	universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II")
 	//fmt.Println(check_valid("XV"))
 	//fmt.Println("hello world")
 	//fmt.Printf("output = %v \n", romanToInt("VX"))
@@ -168,8 +214,42 @@ Grammar
 expr -> term [ ('+' | '-') term ]*
 term -> factor [ ('*' | '/') factor ]*
 factor -> base [ '^' exponent ]*
-base -> '(' expr ')' | identifier | number
-exponent -> '(' expr ')' | identifier | number
+base -> number| '(' expr ')' |
+exponent -> number| '(' expr ')'
 
+def parse_expr():
+  term = parse_term()
+  while 1:
+    if match('+'):
+      term = term + parse_term()
+    elif match('-'):
+      term = term - parse_term()
+    else: return term
 
+def parse_term():
+  factor = parse_factor()
+  while 1:
+    if match('*'):
+      factor = factor * parse_factor()
+    elif match('/'):
+      factor = factor / parse_factor()
+    else: return factor
+
+def parse_factor():
+  if match('-'):
+    negate = -1
+  else: negate = 1
+  if peek_digit():
+    return negate * parse_number()
+  if match('('):
+    expr = parse_expr()
+    if not match(')'): error...
+    return negate * expr
+  error...
+
+def parse_number():
+  num = 0
+  while peek_digit():
+    num = num * 10 + read_digit()
+  return num
 */
