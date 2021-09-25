@@ -5,6 +5,11 @@ import (
 	"math"
 )
 
+type token struct {
+	name  string
+	value int
+}
+
 var roman = map[string]int{
 	"I": 1,
 	"V": 5,
@@ -60,36 +65,37 @@ func check_valid(s string) bool {
 	return true
 }
 
-func lexar(code string) []string {
-	var a []string
+//Event{Id: 1, Name: "event 1"}
+func lexar(code string) []token {
+	var a []token
 	prev := ""
 	//fmt.Println("comes")
 	for _, val := range code {
 		fmt.Println(prev)
 		fmt.Println(a)
 		if val == '(' || val == '{' || val == '[' {
-			a = append(a, "left_bracket")
+			a = append(a, token{name: "left_bracket", value: 0})
 		} else if val == ')' || val == '}' || val == ']' {
 			if len(prev) > 0 && check_valid(prev) {
-				a = append(a, "Number")
+				a = append(a, token{name: "Number", value: romanToInt(prev)})
 				prev = ""
 			}
-			a = append(a, "right_bracket")
+			a = append(a, token{name: "right_bracket", value: 0})
 		} else if val == ' ' {
 			if prev == "times" || prev == "plus" || prev == "power" || prev == "divide" || prev == "minus" {
-				a = append(a, token_table[prev])
+				a = append(a, token{name: token_table[prev], value: 0})
 				prev = ""
 			} else {
 				if len(prev) > 0 && check_valid(prev) {
-					a = append(a, "Number")
+					a = append(a, token{name: "Number", value: romanToInt(prev)})
 					prev = ""
 				} else if len(prev) > 0 {
 					fmt.Println("print from error", prev)
-					return []string{"error"}
+					return []token{{name: "error", value: 0}}
 				}
 			}
 		} else if val == '$' && len(prev) == 0 {
-			a = append(a, "end_token")
+			a = append(a, token{name: "end_token", value: 0})
 			return a
 		} else {
 			prev = prev + string(val)
@@ -119,12 +125,12 @@ func romanToInt(s string) int {
 
 //if val, ok := dict["foo"]; ok
 var idx int = 0
-var universal_lexed []string
-var current_token string
+var universal_lexed []token
+var current_token token
 
-func lex() string {
-	if universal_lexed[idx] == "end_token" {
-		return "parsing done"
+func lex() token {
+	if universal_lexed[idx].name == "end_token" {
+		return token{name: "parsing done", value: 0}
 	} else {
 		next_token := universal_lexed[idx]
 		current_token = next_token
@@ -169,9 +175,9 @@ func parse_expr() int {
 	term := parse_term()
 	for {
 		next_token := lex()
-		if next_token == "plus_token" {
+		if next_token.name == "plus_token" {
 			term = term + parse_term()
-		} else if next_token == "minus_token" {
+		} else if next_token.name == "minus_token" {
 			term = term - parse_term()
 		} else {
 			return term
@@ -184,9 +190,9 @@ func parse_term() int {
 	factor := parse_factor()
 	for {
 		next_token := lex()
-		if next_token == "times_token" {
+		if next_token.name == "times_token" {
 			factor = factor * parse_factor()
-		} else if next_token == "divide_token" {
+		} else if next_token.name == "divide_token" {
 			factor = factor / parse_factor()
 		} else {
 			return factor
@@ -199,7 +205,7 @@ func parse_factor() int {
 	factor := parse_base()
 	for {
 		next_token := lex()
-		if next_token == "power_token" {
+		if next_token.name == "power_token" {
 			factor = int(math.Pow(float64(factor), float64(parse_exponent())))
 		} else {
 			return factor
@@ -211,10 +217,10 @@ func parse_factor() int {
 func parse_base() int {
 	next_token := lex()
 	var value int
-	if next_token == "left_bracket" {
+	if next_token.name == "left_bracket" {
 		value = parse_expr()
 		next_token = lex()
-		if next_token != "right_bracket" {
+		if next_token.name != "right_bracket" {
 			fmt.Println("error in parsing base")
 		}
 	} else {
@@ -225,10 +231,23 @@ func parse_base() int {
 
 //exponent -> number| '(' expr ')'
 func parse_exponent() int {
-	return 1
+	next_token := lex()
+	var value int
+	if next_token.name == "left_bracket" {
+		value = parse_expr()
+		next_token = lex()
+		if next_token.name != "right_bracket" {
+			fmt.Println("error in parsing base")
+		}
+	} else {
+		value = parse_number()
+	}
+	return value
 }
+
 func parse_number() int {
-	return 1
+	next_token := lex()
+	return next_token.value
 }
 func main() {
 	/*
