@@ -141,6 +141,14 @@ func lex() token {
 	}
 
 }
+func peak() token {
+	if idx < len(universal_lexed) {
+		return universal_lexed[idx]
+	} else {
+		fmt.Println("sorry final elemet reached")
+		return universal_lexed[idx-1]
+	}
+}
 func Roman(number int) string {
 	conversions := []struct {
 		value int
@@ -176,12 +184,15 @@ func parse_expr() int {
 	fmt.Println("came in parse expression")
 	term := parse_term()
 	for {
-		next_token := lex()
+		next_token := peak()
 		if next_token.name == "plus_token" {
+			lex()
 			term = term + parse_term()
 		} else if next_token.name == "minus_token" {
+			lex()
 			term = term - parse_term()
 		} else {
+			fmt.Println("line 185 , ", current_token)
 			return term
 		}
 	}
@@ -192,11 +203,12 @@ func parse_term() int {
 	fmt.Println("came in parse term")
 	factor := parse_factor()
 	for {
-		next_token := current_token
+		next_token := peak()
 		if next_token.name == "times_token" {
+			lex()
 			factor = factor * parse_factor()
 		} else if next_token.name == "divide_token" {
-
+			lex()
 			val := parse_factor()
 			fmt.Println("comes here val = ", val)
 			factor = factor / val
@@ -209,29 +221,34 @@ func parse_term() int {
 //factor -> base [ '^' exponent ]*
 func parse_factor() int {
 	fmt.Println("came in parse factor")
-	factor := parse_base()
+	base := parse_base()
+	var exp int
+	exp = 1
 	for {
-		next_token := lex()
+		next_token := peak()
 		if next_token.name == "power_token" {
-			factor = int(math.Pow(float64(factor), float64(parse_exponent())))
+			lex()
+			exp = parse_exponent()
+			fmt.Println("comes 232 only base, exp ", base, exp)
+			return int(math.Pow(float64(base), float64(exp)))
 		} else {
-			fmt.Println("comes here ")
-			return factor
+			fmt.Println("comes 234 only base ", base)
+			return base
 		}
 	}
 }
 
 //base -> number| '(' expr ')'
 func parse_base() int {
-
+	fmt.Println("came in parse base")
 	next_token := lex()
-	fmt.Println("came in parse base", next_token)
 	var value int
 	if next_token.name == "left_bracket" {
 		value = parse_expr()
 		next_token = lex()
 		if next_token.name != "right_bracket" {
 			fmt.Println("error in parsing base", next_token)
+			//os.Exit(0)
 		}
 	} else {
 		value = parse_number()
@@ -239,21 +256,24 @@ func parse_base() int {
 	return value
 }
 
-//exponent -> number| '(' expr ')'
+//exponent -> base| [ '^' exponent ]*
 func parse_exponent() int {
-	next_token := lex()
-	fmt.Println("came in parse exponent", next_token)
-	var value int
-	if next_token.name == "left_bracket" {
-		value = parse_expr()
-		next_token = lex()
-		if next_token.name != "right_bracket" {
-			fmt.Println("error in parsing base")
+	fmt.Println("came in parse exponent")
+	base := parse_base()
+	var exp int
+	exp = 1.00
+	for {
+		next_token := peak()
+		if next_token.name == "power_token" {
+			lex()
+			exp = parse_exponent()
+			fmt.Println("comes 270 base, exp = ", base, exp)
+			return int(math.Pow(float64(base), float64(exp)))
+		} else {
+			fmt.Println("comes 273 base ", base)
+			return base
 		}
-	} else {
-		value = parse_number()
 	}
-	return value
 }
 
 func parse_number() int {
@@ -274,10 +294,14 @@ func main() {
 	//fmt.Println(check_valid("XI"))
 	//fmt.Println(lexar("XI plus (X plus X)$"))
 	//universal_lexed = lexar("{MCMXCVIII divide III divide VI}$") //CXI
-	universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II $")
-
+	//universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II $") // I
+	//universal_lexed = lexar("III plus {IV times II] power II $") //LXVII
+	//universal_lexed = lexar("II power III power II $") //DXII
+	//universal_lexed = lexar("[V minus {VI minus (III minus {II minus I]}])$") //1
+	universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X $") //X
 	fmt.Println(universal_lexed)
 	fmt.Println("value is ", Roman(parse_expr()))
+	//fmt.Println(Roman(64))
 	//fmt.Println(check_valid("XV"))
 	//fmt.Println("hello world")
 	//fmt.Printf("output = %v \n", romanToInt("VX"))
@@ -292,7 +316,7 @@ expr -> term [ ('+' | '-') term ]*
 term -> factor [ ('*' | '/') factor ]*
 factor -> base [ '^' exponent ]*
 base -> number| '(' expr ')'
-exponent -> number| '(' expr ')'
+exponent -> base | [ '^' exponent ]*
 
 def parse_expr():
   term = parse_term()
