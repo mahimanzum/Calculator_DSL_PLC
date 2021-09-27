@@ -141,6 +141,11 @@ func lex() token {
 	}
 
 }
+func clear() {
+	idx = 0
+	universal_lexed = universal_lexed[:0]
+
+}
 func peak() token {
 	if idx < len(universal_lexed) {
 		return universal_lexed[idx]
@@ -283,23 +288,25 @@ func parse_number() int {
 	fmt.Println("name = ", current_token.name, "value calculated", current_token.value)
 	return current_token.value
 }
+func parse_code(code string) string {
+	universal_lexed = lexar(code)
+	val := Roman(parse_expr())
+	clear()
+	return val
+}
 func main() {
-	/*
-		for i := 5; i < 50; i++ {
-			if i != romanToInt(Roman(i)) {
-				fmt.Print(i)
-			}
-		}
-	*/
 	//fmt.Println(check_valid("XI"))
 	//fmt.Println(lexar("XI plus (X plus X)$"))
 	//universal_lexed = lexar("{MCMXCVIII divide III divide VI}$") //CXI
 	//universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II $") // I
 	//universal_lexed = lexar("III plus {IV times II] power II $") //LXVII
 	//universal_lexed = lexar("II power III power II $") //DXII
-	//universal_lexed = lexar("[V minus {VI minus (III minus {II minus I]}])$") //1
-	universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X $") //X
+	universal_lexed = lexar("[V minus {VI minus (III minus {II minus I]}])$") //1
+	//universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X $") //X
 	fmt.Println(universal_lexed)
+	fmt.Println(Roman(parse_expr()))
+	clear()
+	universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II $")
 	fmt.Println("value is ", Roman(parse_expr()))
 	//fmt.Println(Roman(64))
 	//fmt.Println(check_valid("XV"))
