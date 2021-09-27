@@ -4,8 +4,8 @@ A sample calculator Module with Go lang with own lexar, grammar parser
 
 My Grammar
 
-  expr -> term [ ('+' | '-') term ]* <br />
-  term -> factor [ ('*' | '/') factor ]* <br />
-  factor -> base [ '^' exponent ]* <br />
-  base -> number| '(' expr ')' <br />
-  exponent -> number| '(' expr ')' <br />
+expr -> term [ ('+' | '-') term ]* <br />
+term -> factor [ ('*' | '/') factor ]* <br />
+factor -> base [ '^' exponent ]* <br />
+base -> number| '(' expr ')' <br />
+exponent -> base | [ '^' exponent ]* <br />
