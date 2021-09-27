@@ -3,11 +3,13 @@ package main
 import (
 	"fmt"
 	"math"
+	"os"
 )
 
 type token struct {
 	name  string
 	value int
+	index int
 }
 
 var roman = map[string]int{
@@ -64,30 +66,39 @@ func check_valid(s string) bool {
 	}
 	return true
 }
+func write_message(n int, s string) {
+	fmt.Println(s)
+	os.Exit(1)
+}
 
-//Event{Id: 1, Name: "event 1"}
 func lexar(code string) []token {
 	var a []token
 	prev := ""
+	id := 1
 	//fmt.Println("comes")
 	for _, val := range code {
 		//fmt.Println(prev)
 		//fmt.Println(a)
 		if val == '(' || val == '{' || val == '[' {
-			a = append(a, token{name: "left_bracket", value: 0})
+			a = append(a, token{name: "left_bracket", value: 0, index: id})
+			id += 1
 		} else if val == ')' || val == '}' || val == ']' {
 			if len(prev) > 0 && check_valid(prev) {
-				a = append(a, token{name: "Number", value: romanToInt(prev)})
+				a = append(a, token{name: "Number", value: romanToInt(prev), index: id})
+				id += 1
 				prev = ""
 			}
-			a = append(a, token{name: "right_bracket", value: 0})
+			a = append(a, token{name: "right_bracket", value: 0, index: id})
+			id += 1
 		} else if val == ' ' {
 			if prev == "times" || prev == "plus" || prev == "power" || prev == "divide" || prev == "minus" {
-				a = append(a, token{name: token_table[prev], value: 0})
+				a = append(a, token{name: token_table[prev], value: 0, index: id})
+				id += 1
 				prev = ""
 			} else {
 				if len(prev) > 0 && check_valid(prev) {
-					a = append(a, token{name: "Number", value: romanToInt(prev)})
+					a = append(a, token{name: "Number", value: romanToInt(prev), index: id})
+					id += 1
 					prev = ""
 				} else if len(prev) > 0 {
 					fmt.Println("print from error", prev)
@@ -95,7 +106,8 @@ func lexar(code string) []token {
 				}
 			}
 		} else if val == '$' && len(prev) == 0 {
-			a = append(a, token{name: "end_token", value: 0})
+			a = append(a, token{name: "end_token", value: 0, index: id})
+			id += 1
 			return a
 		} else {
 			prev = prev + string(val)
@@ -306,6 +318,7 @@ func main() {
 	fmt.Println(universal_lexed)
 	fmt.Println(Roman(parse_expr()))
 	clear()
+	write_message(1, "exit from code called")
 	universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II $")
 	fmt.Println("value is ", Roman(parse_expr()))
 	//fmt.Println(Roman(64))
@@ -314,6 +327,7 @@ func main() {
 	//fmt.Printf("output = %v \n", romanToInt("VX"))
 	//fmt.Printf("【input】:%v    【output】:%v\n", p.one, romanToInt(p.one))
 	//fmt.Printf("\n\n\n")
+	os.Exit(0)
 }
 
 /*
