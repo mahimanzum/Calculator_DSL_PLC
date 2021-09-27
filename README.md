@@ -3,6 +3,11 @@ A sample calculator Module with Go lang with own lexar, grammar parser
 
 
 My Grammar
+Learning while writing this grammar:
+The more deeper the grammar rule the higher presedance it has over other operations
+You want an operation right associative you make it right recursion
+
+Exponentiation function was the most informative , usefull to implement
 
 expr -> term [ ('+' | '-') term ]* <br />
 term -> factor [ ('*' | '/') factor ]* <br />
