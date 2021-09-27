@@ -7,9 +7,11 @@ import (
 )
 
 type token struct {
-	name  string
-	value int
-	index int
+	name     string
+	value    int
+	index    int
+	start_id int
+	end_id   int
 }
 
 var roman = map[string]int{
@@ -20,6 +22,13 @@ var roman = map[string]int{
 	"C": 100,
 	"D": 500,
 	"M": 1000,
+}
+
+var error_message = map[string]string{
+	"lexical_error":  "Quid dicis? You offend Caesar with your sloppy lexical habits!",
+	"syntax_error":   "Quid dicis? True Romans would not understand your syntax!",
+	"zero_error":     "Quid dicis? Arab merchants haven't left for India yet!",
+	"negative_error": "Quid dicis? Caesar demands positive thoughts!",
 }
 var valids = map[string]bool{
 	"IV": true,
@@ -53,21 +62,26 @@ func check_valid(s string) bool {
 	for id, val := range s {
 		if id == 0 {
 			continue
+		} else if _, ok := roman[string(val)]; !ok {
+			return false
 		} else if roman[string(s[id])] <= roman[string(s[id-1])] {
 			continue
 		} else if _, ok := valids[s[id-1:id+1]]; ok {
 			continue
-		} else if _, ok := roman[string(val)]; !ok {
-
-			return false
 		} else {
 			return false
 		}
 	}
+	//fmt.Println("true:", s)
 	return true
 }
-func write_message(n int, s string) {
-	fmt.Println(s)
+func write_message(index int, s string, length int) {
+	fmt.Println(raw_code)
+	for i := 0; i < index-length; i += 1 {
+		fmt.Print(" ")
+	}
+	fmt.Println("^ ")
+	fmt.Println(error_message[s])
 	os.Exit(1)
 }
 
@@ -76,32 +90,35 @@ func lexar(code string) []token {
 	prev := ""
 	id := 1
 	//fmt.Println("comes")
-	for _, val := range code {
-		//fmt.Println(prev)
+	for string_id, val := range code {
+		//fmt.Println(prev, string_id, val)
 		//fmt.Println(a)
 		if val == '(' || val == '{' || val == '[' {
-			a = append(a, token{name: "left_bracket", value: 0, index: id})
+			a = append(a, token{name: "left_bracket", value: 0, index: id, start_id: string_id, end_id: string_id + 1})
 			id += 1
 		} else if val == ')' || val == '}' || val == ']' {
 			if len(prev) > 0 && check_valid(prev) {
-				a = append(a, token{name: "Number", value: romanToInt(prev), index: id})
+				a = append(a, token{name: "Number", value: romanToInt(prev), index: id, start_id: string_id - len(prev), end_id: string_id})
 				id += 1
 				prev = ""
 			}
-			a = append(a, token{name: "right_bracket", value: 0, index: id})
+			a = append(a, token{name: "right_bracket", value: 0, index: id, start_id: string_id, end_id: string_id + 1})
 			id += 1
 		} else if val == ' ' {
+			//fmt.Println("comes in 109")
 			if prev == "times" || prev == "plus" || prev == "power" || prev == "divide" || prev == "minus" {
-				a = append(a, token{name: token_table[prev], value: 0, index: id})
+				a = append(a, token{name: token_table[prev], value: 0, index: id, start_id: string_id - len(prev), end_id: string_id})
 				id += 1
 				prev = ""
 			} else {
 				if len(prev) > 0 && check_valid(prev) {
-					a = append(a, token{name: "Number", value: romanToInt(prev), index: id})
+					a = append(a, token{name: "Number", value: romanToInt(prev), index: id, start_id: string_id - len(prev), end_id: string_id})
 					id += 1
 					prev = ""
+					//fmt.Println("comes in 118")
 				} else if len(prev) > 0 {
-					fmt.Println("print from error", prev)
+					//fmt.Println("print from error", prev)
+					write_message(string_id, "lexical_error", len(prev))
 					return []token{{name: "error", value: 0}}
 				}
 			}
@@ -110,6 +127,7 @@ func lexar(code string) []token {
 			id += 1
 			return a
 		} else {
+			//fmt.Println("comes:", string(val))
 			prev = prev + string(val)
 		}
 	}
@@ -139,6 +157,7 @@ func romanToInt(s string) int {
 var idx int = 0
 var universal_lexed []token
 var current_token token
+var raw_code string
 
 func lex() token {
 	if universal_lexed[idx].name == "end_token" {
@@ -206,10 +225,16 @@ func parse_expr() int {
 			lex()
 			term = term + parse_term()
 		} else if next_token.name == "minus_token" {
+			temp := next_token
 			lex()
 			term = term - parse_term()
+			if term < 0 {
+				write_message(temp.start_id, "negative_error", 0)
+			} else if term == 0 {
+				write_message(temp.start_id, "zero_error", 0)
+			}
 		} else {
-			fmt.Println("line 185 , ", current_token)
+			//fmt.Println("line 185 , ", current_token)
 			return term
 		}
 	}
@@ -307,26 +332,27 @@ func parse_code(code string) string {
 	return val
 }
 func main() {
-	//fmt.Println(check_valid("XI"))
-	//fmt.Println(lexar("XI plus (X plus X)$"))
-	//universal_lexed = lexar("{MCMXCVIII divide III divide VI}$") //CXI
-	//universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II $") // I
-	//universal_lexed = lexar("III plus {IV times II] power II $") //LXVII
-	//universal_lexed = lexar("II power III power II $") //DXII
-	universal_lexed = lexar("[V minus {VI minus (III minus {II minus I]}])$") //1
+
+	//universal_lexed = lexar("[V minus {VI minus (III minus {II minus I]}])$") //1
 	//universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X $") //X
-	fmt.Println(universal_lexed)
+	//lexical error
+	//raw_code = "III plu {IV times II] power II"
+	//raw_code = "I plus III minus VX times VI"
+
+	//zero error
+	//raw_code = "II times (I plus II minus III)"
+
+	//negative error
+	raw_code = "II plus I times III minus VI"
+	universal_lexed = lexar(raw_code + " $")
+	//fmt.Println(universal_lexed)
 	fmt.Println(Roman(parse_expr()))
 	clear()
-	write_message(1, "exit from code called")
-	universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II $")
-	fmt.Println("value is ", Roman(parse_expr()))
-	//fmt.Println(Roman(64))
-	//fmt.Println(check_valid("XV"))
-	//fmt.Println("hello world")
-	//fmt.Printf("output = %v \n", romanToInt("VX"))
-	//fmt.Printf("【input】:%v    【output】:%v\n", p.one, romanToInt(p.one))
-	//fmt.Printf("\n\n\n")
+
+	//write_message(1, "exit from code called")
+	//universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II $")
+	//fmt.Println("value is ", Roman(parse_expr()))
+
 	os.Exit(0)
 }
 
@@ -374,4 +400,19 @@ def parse_number():
   while peek_digit():
     num = num * 10 + read_digit()
   return num
+*/
+/*
+//fmt.Println(check_valid("XI"))
+//fmt.Println(lexar("XI plus (X plus X)$"))
+//universal_lexed = lexar("{MCMXCVIII divide III divide VI}$") //CXI
+//universal_lexed = lexar("{MCMXCVIII divide III divide VI minus XI) divide X power II $") // I
+//universal_lexed = lexar("III plus {IV times II] power II $") //LXVII
+//universal_lexed = lexar("II power III power II $") //DXII
+
+//fmt.Println(Roman(64))
+//fmt.Println(check_valid("XV"))
+//fmt.Println("hello world")
+//fmt.Printf("output = %v \n", romanToInt("VX"))
+//fmt.Printf("【input】:%v    【output】:%v\n", p.one, romanToInt(p.one))
+//fmt.Printf("\n\n\n")
 */
