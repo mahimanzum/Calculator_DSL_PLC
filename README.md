@@ -20,3 +20,10 @@ First My grammar was not right associative. And there were bugs. Then i introduc
 Main thing I learned while doing this project is <br />
 1. Define the Grammar and think it through <br />
 2. Once you are confident with the grammar just convert it to code with no bugs. Don't think about grammar correctness while coding that part will come again while testing. Coding and thinking about the correctness will only introduce bugs in the code.
+
+About Go lang:
+
+Variable declaration
+fixed and dynamic Array declaration
+Function, Conditional, Map
+These are enough to learn any languages and start with in a heart bit.

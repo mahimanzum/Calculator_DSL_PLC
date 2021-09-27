@@ -161,7 +161,7 @@ var raw_code string
 
 func lex() token {
 	if universal_lexed[idx].name == "end_token" {
-		return token{name: "parsing done", value: 0}
+		return token{name: "end_token", value: 0, start_id: len(raw_code) - 1, end_id: len(raw_code)}
 	} else {
 
 		next_token := universal_lexed[idx]
@@ -289,8 +289,8 @@ func parse_base() int {
 		value = parse_expr()
 		next_token = lex()
 		if next_token.name != "right_bracket" {
-			//fmt.Println("error in parsing base", next_token)
-			write_message(current_token.end_id, "syntax_error", 0)
+			//fmt.Println("error in parsing base", next_token, current_token)
+			write_message(next_token.end_id, "syntax_error", 0)
 			//os.Exit(0)
 		}
 	} else {
