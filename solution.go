@@ -165,7 +165,7 @@ func lex() token {
 	} else {
 
 		next_token := universal_lexed[idx]
-		fmt.Println("############## Consumed ", idx, next_token)
+		//fmt.Println("############## Consumed ", idx, next_token)
 		current_token = next_token
 		idx = idx + 1
 		return next_token
@@ -217,7 +217,7 @@ func Roman(number int) string {
 
 //expr -> term [ ('+' | '-') term ]*
 func parse_expr() int {
-	fmt.Println("came in parse expression")
+	//fmt.Println("came in parse expression")
 	term := parse_term()
 	for {
 		next_token := peak()
@@ -242,7 +242,7 @@ func parse_expr() int {
 
 //term -> factor [ ('*' | '/') factor ]*
 func parse_term() int {
-	fmt.Println("came in parse term")
+	//fmt.Println("came in parse term")
 	factor := parse_factor()
 	for {
 		next_token := peak()
@@ -262,7 +262,7 @@ func parse_term() int {
 
 //factor -> base [ '^' exponent ]*
 func parse_factor() int {
-	fmt.Println("came in parse factor")
+	//fmt.Println("came in parse factor")
 	base := parse_base()
 	var exp int
 	exp = 1
@@ -271,10 +271,10 @@ func parse_factor() int {
 		if next_token.name == "power_token" {
 			lex()
 			exp = parse_exponent()
-			fmt.Println("comes 232 only base, exp ", base, exp)
+			//fmt.Println("comes 232 only base, exp ", base, exp)
 			return int(math.Pow(float64(base), float64(exp)))
 		} else {
-			fmt.Println("comes 234 only base ", base)
+			//fmt.Println("comes 234 only base ", base)
 			return base
 		}
 	}
@@ -282,14 +282,15 @@ func parse_factor() int {
 
 //base -> number| '(' expr ')'
 func parse_base() int {
-	fmt.Println("came in parse base")
+	//fmt.Println("came in parse base")
 	next_token := lex()
 	var value int
 	if next_token.name == "left_bracket" {
 		value = parse_expr()
 		next_token = lex()
 		if next_token.name != "right_bracket" {
-			fmt.Println("error in parsing base", next_token)
+			//fmt.Println("error in parsing base", next_token)
+			write_message(current_token.end_id, "syntax_error", 0)
 			//os.Exit(0)
 		}
 	} else {
@@ -300,7 +301,7 @@ func parse_base() int {
 
 //exponent -> base| [ '^' exponent ]*
 func parse_exponent() int {
-	fmt.Println("came in parse exponent")
+	//fmt.Println("came in parse exponent")
 	base := parse_base()
 	var exp int
 	exp = 1.00
@@ -309,20 +310,20 @@ func parse_exponent() int {
 		if next_token.name == "power_token" {
 			lex()
 			exp = parse_exponent()
-			fmt.Println("comes 270 base, exp = ", base, exp)
+			//fmt.Println("comes 270 base, exp = ", base, exp)
 			return int(math.Pow(float64(base), float64(exp)))
 		} else {
-			fmt.Println("comes 273 base ", base)
+			//fmt.Println("comes 273 base ", base)
 			return base
 		}
 	}
 }
 
 func parse_number() int {
-	fmt.Println("came in parse number")
+	//fmt.Println("came in parse number")
 	//next_token := lex()
 
-	fmt.Println("name = ", current_token.name, "value calculated", current_token.value)
+	//fmt.Println("name = ", current_token.name, "value calculated", current_token.value)
 	return current_token.value
 }
 func parse_code(code string) string {
@@ -343,10 +344,15 @@ func main() {
 	//raw_code = "II times (I plus II minus III)"
 
 	//negative error
-	raw_code = "II plus I times III minus VI"
+	//raw_code = "II plus I times III minus VI"
+
+	//syntax error
+	raw_code = "III plus {IV times II power II"
 	universal_lexed = lexar(raw_code + " $")
+
 	//fmt.Println(universal_lexed)
 	fmt.Println(Roman(parse_expr()))
+	fmt.Print(lex())
 	clear()
 
 	//write_message(1, "exit from code called")
