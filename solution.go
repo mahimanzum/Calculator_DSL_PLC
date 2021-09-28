@@ -347,7 +347,7 @@ func main() {
 	//raw_code = "II plus I times III minus VI"
 
 	//syntax error
-	raw_code = "III plus {IV times II power II"
+	raw_code = "III plus {IV times II power II]"
 	universal_lexed = lexar(raw_code + " $")
 
 	//fmt.Println(universal_lexed)
