@@ -1,5 +1,6 @@
 import json
 from pprint import pprint
+import sys
 def read_json(path):
     f = open(path)
     data = json.load(f)
@@ -10,7 +11,9 @@ def write_file(content, path):
     f.write(content)
     f.close()
 
-data = read_json("stocks.json")
+#data = read_json("stocks.json")
+file_name = sys.argv[1]
+data = read_json(file_name)
 #print(data.keys())
 #INSERT INTO BuyRequests (NumShares, Symbol, MaxPrice, AccountID) VALUES (‘100’, ‘IBM’, ‘45’,  ‘Hokie123’)
 def make_sql():
@@ -51,7 +54,7 @@ def make_dsl():
     stock_trade_requests = "("+ ", ".join(trades)+")" +" for account {}".format(data['user id'])
     #print(stock_trade_requests)
     return stock_trade_requests
-write_file(make_dsl(), "my_stocks.dsl")
-write_file(make_sql(), "my_stocks.sql")
+write_file(make_dsl(),file_name.replace("json", "dsl"))
+write_file(make_sql(),file_name.replace("json", "sql"))
     
 
