@@ -236,9 +236,13 @@ func parse_term() int {
 			lex()
 			factor = factor * parse_factor()
 		} else if next_token.name == "divide_token" {
+			cur_tok := next_token
 			lex()
 			val := parse_factor()
-			fmt.Println("comes here val = ", val)
+			//fmt.Println("comes here val = ", val)
+			if factor%val != 0 {
+				write_message(cur_tok.start_id, "zero_error", 0)
+			}
 			factor = factor / val
 		} else {
 			return factor
@@ -320,7 +324,8 @@ func main() {
 	//raw_code = "II plus I times III minus VI"
 
 	//syntax error
-	raw_code = "III plus {IV times II} power II]"
+	//raw_code = "III plus {IV times II} power II]"
+	raw_code = os.Args[1]
 	universal_lexed = lexar(raw_code + " $")
 	//fmt.Print(lex())
 	val := Roman(parse_expr())

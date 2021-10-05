@@ -6,7 +6,7 @@ def read_json(path):
     #pprint(data)
     return data 
 def write_file(content, path):
-    f = open(path, "a")
+    f = open(path, "w")
     f.write(content)
     f.close()
 
@@ -18,15 +18,15 @@ def make_sql():
     if 'buy' in data.keys():
         for item in data['buy']:
             if 'at max' in item.keys():
-                sql_file.append("INSERT INTO BuyRequests (NumShares, Symbol, MaxPrice, AccountID) VALUES ({}, {},{}, {})".format(item['shares'], item['stock symbol'], item['at max'], data['user id']))
+                sql_file.append("INSERT INTO BuyRequests (NumShares, Symbol, MaxPrice, AccountID) VALUES ('{}', '{}','{}', '{}')".format(item['shares'], item['stock symbol'], item['at max'], data['user id']))
             elif 'at min' in item.keys():
-                sql_file.append("INSERT INTO BuyRequests (NumShares, Symbol, MinPrice, AccountID) VALUES ({}, {},{}, {})".format(item['shares'], item['stock symbol'], item['at min'], data['user id']))
+                sql_file.append("INSERT INTO BuyRequests (NumShares, Symbol, MinPrice, AccountID) VALUES ('{}', '{}','{}', '{}')".format(item['shares'], item['stock symbol'], item['at min'], data['user id']))
     if 'sell' in data.keys():
         for item in data['sell']:
             if 'at max' in item.keys():
-                sql_file.append("INSERT INTO SellRequests (NumShares, Symbol, MaxPrice, AccountID) VALUES ({}, {},{}, {})".format(item['shares'], item['stock symbol'], item['at max'], data['user id']))
+                sql_file.append("INSERT INTO SellRequests (NumShares, Symbol, MaxPrice, AccountID) VALUES ('{}', '{}','{}', '{}')".format(item['shares'], item['stock symbol'], item['at max'], data['user id']))
             elif 'at min' in item.keys():
-                sql_file.append("INSERT INTO SellRequests (NumShares, Symbol, MinPrice, AccountID) VALUES ({}, {},{}, {})".format(item['shares'], item['stock symbol'], item['at min'], data['user id']))
+                sql_file.append("INSERT INTO SellRequests (NumShares, Symbol, MinPrice, AccountID) VALUES ('{}', '{}','{}', '{}')".format(item['shares'], item['stock symbol'], item['at min'], data['user id']))
     return "\n".join(sql_file)
 
 def make_dsl():
