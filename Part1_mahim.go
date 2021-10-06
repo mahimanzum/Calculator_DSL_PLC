@@ -75,12 +75,12 @@ func check_valid(s string) bool {
 	return true
 }
 func write_message(index int, s string, length int) {
-	fmt.Println(raw_code)
+	fmt.Print(raw_code + "\n")
 	for i := 0; i < index-length; i += 1 {
 		fmt.Print(" ")
 	}
-	fmt.Println("^ ")
-	fmt.Println(error_message[s])
+	fmt.Print("^\n")
+	fmt.Print(error_message[s])
 	os.Exit(1)
 }
 
