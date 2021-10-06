@@ -28,6 +28,11 @@ fixed and dynamic Array declaration
 Function, Conditional, Map
 These are enough to learn any languages and start with in a heart bit.
 
+I tested in rlogin with the bash script file. First there were some space related issues in the error outputs but when i removed unnecessary spaces i got this
+
+Congratulations, you have passed all tests in this suite!:
+
+
 # Part2A and Part2B
 
 Very simple implementation of json parsing with python. And the stock trade DSL was also straight forward. So I just had to follow instructions. For both of these I implemented different functions to create dsl and sql files. First 2 functions (make_dsl() and make_sql()) are for part2A. <br >
@@ -45,14 +50,19 @@ where i just added the "delete?" string which means some stock trades can also b
 ```json
   {
 	"user id" : "Hokie123",
-	"buy" : [
-        {"stock symbol" : "IBM", "shares" : 100, "at max" : 45},{"stock symbol" : "GOOGL", "shares" : 50, "at max" : 60}, {"stock symbol" : "AMZN", "shares" : 120, "at max" : 70}
-],  "sell" : [{"stock symbol" : "ORCL", "shares" : 30, "at min" : 25},{"stock symbol" : "GOOGL", "shares" : 20, "at min" : 40} ]
-, "delete" :{"sell":[{"stock symbol" : "ORCL", "shares" : 30, "at min" : 25}],"buy":[{"stock symbol" : "IBM", "shares" : 100, "at max" : 45} ]}
-
+	"buy" : [{"stock symbol" : "IBM", "shares" : 100, "at max" : 45},
+		 {"stock symbol" : "GOOGL", "shares" : 50, "at max" : 60}, 
+		 {"stock symbol" : "AMZN", "shares" : 120, "at max" : 70}], 
+	"sell" : [{"stock symbol" : "ORCL", "shares" : 30, "at min" : 25},
+		  {"stock symbol" : "GOOGL", "shares" : 20, "at min" : 40} ], 
+	"delete" :{
+		"sell":[{"stock symbol" : "ORCL", "shares" : 30, "at min" : 25}],
+		"buy":[{"stock symbol" : "IBM", "shares" : 100, "at max" : 45} ]}
 }
 ```
-  
+and my dsl file now could handle 2 commands with delete and without delete commands. So there were 2 lines in the dsl now.
+
+Everything runs exactly as supposed to.
   
   
   
