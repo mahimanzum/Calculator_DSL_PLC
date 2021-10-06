@@ -28,6 +28,35 @@ fixed and dynamic Array declaration
 Function, Conditional, Map
 These are enough to learn any languages and start with in a heart bit.
 
-# Part2A
-Very simple implementation of json parsing with python.
-# Part2B
+# Part2A and Part2B
+
+Very simple implementation of json parsing with python. And the stock trade DSL was also straight forward. So I just had to follow instructions. For both of these I implemented different functions to create dsl and sql files. First 2 functions (make_dsl() and make_sql()) are for part2A. <br >
+
+For part2B make_dsl_with_delete() and make_sql_with_delete() was implemented which were commented out for the previous part where I found the problem description was a bit ambigious. My grammar for the updated DSL was <br >
+
+<stock_trade_requests> →  [delete]? ‘(' <trade> {‘,’ <trade>} ‘) for account' <acct_ident>’.’ <br >
+<trade> →  <number> <stock_symbol> ‘shares’ (‘buy at max' | ‘sell at min') <number> <br >
+<number> →  [1-9] {[0-9]} <br >
+<stock_symbol> → 'AAPL'|'HP'|'IBM'|'AMZN'|'MSFT'|'GOOGL'|'INTC'|'CSCO'|'ORCL'|'QCOM' <br >
+<acct_ident> →  ‘“‘alpha_char { alpha_char | digit | ’_’} ‘“‘ <br >
+Note:  ‘“‘ is a “ surrounded by ‘ <br >
+
+where i just added the "delete?" string which means some stock trades can also be deleted with this command. So my updated json was like this. <br >  
+
+  {
+	"user id" : "Hokie123",
+	"buy" : [
+        {"stock symbol" : "IBM", "shares" : 100, "at max" : 45},{"stock symbol" : "GOOGL", "shares" : 50, "at max" : 60}, {"stock symbol" : "AMZN", "shares" : 120, "at max" : 70}
+],  "sell" : [{"stock symbol" : "ORCL", "shares" : 30, "at min" : 25},{"stock symbol" : "GOOGL", "shares" : 20, "at min" : 40} ]
+, "delete" :{"sell":[{"stock symbol" : "ORCL", "shares" : 30, "at min" : 25}],"buy":[{"stock symbol" : "IBM", "shares" : 100, "at max" : 45} ]}
+
+}
+  
+  
+  
+  
+  
+
+
+
+
