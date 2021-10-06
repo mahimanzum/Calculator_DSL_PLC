@@ -42,7 +42,7 @@ For part2B make_dsl_with_delete() and make_sql_with_delete() was implemented whi
 Note:  ‘“‘ is a “ surrounded by ‘ <br >
 
 where i just added the "delete?" string which means some stock trades can also be deleted with this command. So my updated json was like this. <br >  
-
+```json
   {
 	"user id" : "Hokie123",
 	"buy" : [
@@ -51,7 +51,7 @@ where i just added the "delete?" string which means some stock trades can also b
 , "delete" :{"sell":[{"stock symbol" : "ORCL", "shares" : 30, "at min" : 25}],"buy":[{"stock symbol" : "IBM", "shares" : 100, "at max" : 45} ]}
 
 }
-  
+```
   
   
   
