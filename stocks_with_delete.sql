@@ -1,0 +1,7 @@
+INSERT INTO BuyRequests (NumShares, Symbol, MaxPrice, AccountID) VALUES ('100', 'IBM','45', 'Hokie123')
+INSERT INTO BuyRequests (NumShares, Symbol, MaxPrice, AccountID) VALUES ('50', 'GOOGL','60', 'Hokie123')
+INSERT INTO BuyRequests (NumShares, Symbol, MaxPrice, AccountID) VALUES ('120', 'AMZN','70', 'Hokie123')
+INSERT INTO SellRequests (NumShares, Symbol, MinPrice, AccountID) VALUES ('30', 'ORCL','25', 'Hokie123')
+INSERT INTO SellRequests (NumShares, Symbol, MinPrice, AccountID) VALUES ('20', 'GOOGL','40', 'Hokie123')
+DELETE FROM BuyRequests WHERE (NumShares = '100' AND Symbol = 'IBM' AND MaxPrice = '45' AND AccountID = 'Hokie123')
+DELETE FROM SellRequests WHERE (NumShares = '30' AND Symbol = 'ORCL' AND MaxPrice = '25' AND AccountID = 'Hokie123')
