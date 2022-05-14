@@ -63,7 +63,7 @@ where i just added the "delete?" string which means some stock trades can also b
 and my dsl file now could handle 2 commands with delete and without delete commands. So there were 2 lines in the dsl now.
 
 Everything runs exactly as supposed to.
-  
+Renamed
   
   
 
